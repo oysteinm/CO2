@@ -1,0 +1,78 @@
+---
+title: "Utslipp av karbondioksid"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(comment = NA)
+```
+
+## Utslippsdata
+
+Vi benytter of av data fra "Our World in Data", se <https://ourworldindata.org/co2-and-other-greenhouse-gas-emissions>.
+
+```{r data, include=FALSE}
+library(tidyverse)
+co2data <- read_csv("https://raw.githubusercontent.com/owid/co2-data/master/owid-co2-data.csv")
+```
+
+## Norge og Kina
+
+Vi ser nå på $CO_2$ utslipp per capita for Norge og Kina.
+
+```{r plot1, echo=FALSE}
+co2data %>%
+  rename(land=country) %>% 
+  mutate(land=recode(land,
+                     'Norway'="Norge",
+                     'China'="Kina")) %>% 
+  filter(land %in% c("Norge", "Kina")) %>% 
+  ggplot(aes(x=year, y=co2_per_capita, color=land)) + geom_line(lwd=2) +
+  scale_color_manual(values=c("#56B4E9", "#E69F00")) +
+  theme_bw() + 
+  ggtitle(expression(CO[2]~utslipp~per~år)) + 
+  xlab("År") +
+  ylab("Tonn per capita")
+```
+
+### Oppgave
+
+Lag en liten tekst som sier noe om figuren over.
+
+\pagebreak
+
+## Globale utslipp
+
+Følgende figur viser globale $CO_2$ utslipp i milliarder tonn.
+
+```{r plot2, echo=FALSE}
+co2data %>%
+  filter(country=="World") %>% 
+  ggplot(aes(x=year, y=co2/1000)) + geom_line() +
+  theme_bw() +
+  geom_vline(xintercept=1900, colour="blue") +
+  geom_text(aes(x=1900, label="1900", y=10), colour="blue", angle=90, vjust = 1.2) +
+  geom_vline(xintercept=1927, colour="darkblue") +
+  geom_text(aes(x=1927, label="1927", y=15), colour="darkblue", angle=90, vjust = 1.2) +
+  geom_vline(xintercept=1956, colour="purple") +
+  geom_text(aes(x=1956, label="1956", y=20), colour="purple", angle=90, vjust = 1.2) +
+  geom_vline(xintercept=1972, colour="black") +
+  geom_text(aes(x=1972, label="1972", y=25), colour="black", angle=90, vjust = 1.2) +
+  geom_vline(xintercept=2010, colour="red") +
+  geom_text(aes(x=2010, label="2010", y=30), colour="red", angle=90, vjust = 1.2) +
+  ggtitle(expression(Globale~CO[2]~utslipp~per~år)) + 
+  xlab("År") +
+  ylab("Milliarder tonn")
+```
+
+### Oppgave
+
+Modifiser plottet over slik at 1895 er startpunktet.
+
+Setter vi 1900 som basis, så tok det `r 1927-1900` år å fordoble $CO_2$ utslippene. De ulike stolpene viser hvor mange år det tok å fordoble $CO_2$ utslippene sammenlignet med perioden før.
+
+### Oppgave
+
+Skriv en tekst som angir $CO_2$ utslippene i 1900 og 2019, med referanse til dataene, og som beregner økningen i $CO_2$ utslipp på disse 119 årene.
+
